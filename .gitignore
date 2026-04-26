@@ -1,0 +1,65 @@
+# =====================
+# General
+# =====================
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+*.bak
+
+# =====================
+# Python / Django
+# =====================
+__pycache__/
+*.py[cod]
+*$py.class
+*.sqlite3
+db.sqlite3
+
+# Virtual environments
+venv/
+env/
+.venv/
+ENV/
+
+# Django local files
+*.pot
+*.mo
+staticfiles/
+media/
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# =====================
+# Node / Angular
+# =====================
+node_modules/
+dist/
+.angular/
+.cache/
+coverage/
+
+# Angular build files
+frontend/dist/
+frontend/.angular/
+
+# =====================
+# IDE / Editor
+# =====================
+.vscode/
+.idea/
+*.swp
+
+# =====================
+# OS files
+# =====================
+desktop.ini
+
+# =====================
+# Docker optional
+# =====================
+*.pid
+docker-compose.override.yml

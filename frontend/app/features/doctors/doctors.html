@@ -1,0 +1,40 @@
+<section class="container">
+  <div class="page-title">
+    <h2>Doctors</h2>
+    <a *ngIf="auth.isAdmin()" class="btn btn-primary" routerLink="/doctors/new">Add doctor</a>
+  </div>
+
+  <div class="card toolbar">
+    <input [(ngModel)]="search" placeholder="Search by name or email" />
+    <input [(ngModel)]="specialty" placeholder="Filter by specialty" />
+    <input [(ngModel)]="city" placeholder="Filter by city" />
+    <select [(ngModel)]="ordering">
+      <option value="full_name">Name A-Z</option>
+      <option value="-full_name">Name Z-A</option>
+      <option value="specialty">Specialty</option>
+      <option value="city">City</option>
+    </select>
+    <button class="btn btn-secondary" (click)="load()">Apply</button>
+  </div>
+
+  <div class="grid grid-3">
+    <div class="card doctor-card" *ngFor="let doctor of doctors">
+      <div class="doctor-media">
+        <img *ngIf="doctor.profile_image_url; else doctorPlaceholder" class="preview" [src]="doctor.profile_image_url" [alt]="doctor.full_name" />
+        <ng-template #doctorPlaceholder>
+          <div class="doctor-avatar-placeholder" aria-hidden="true"></div>
+        </ng-template>
+      </div>
+      <h3>{{ doctor.full_name }}</h3>
+      <p class="small">{{ doctor.specialty }} • {{ doctor.city }}</p>
+      <p>{{ doctor.email }}</p>
+      <p>{{ doctor.phone }}</p>
+
+      <div class="actions">
+        <a *ngIf="doctor.license_pdf_url" class="btn btn-secondary" [href]="doctor.license_pdf_url" target="_blank">Open PDF</a>
+        <a *ngIf="auth.isAdmin()" class="btn btn-secondary" [routerLink]="['/doctors', getKey(doctor), 'edit']">Edit</a>
+        <button *ngIf="auth.isAdmin()" class="btn btn-danger" (click)="remove(getKey(doctor))">Delete</button>
+      </div>
+    </div>
+  </div>
+</section>

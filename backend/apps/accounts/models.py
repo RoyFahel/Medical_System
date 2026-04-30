@@ -1,39 +1,28 @@
-from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 from django.db import models
-from apps.common.models import TimeStampedSoftDeleteModel
+from django_mongodb_backend.fields import ObjectIdAutoField
 
-class UserManager(BaseUserManager):
-    def create_user(self, email, password=None, **extra_fields):
-        if not email:
-            raise ValueError('Email is required')
-        email = self.normalize_email(email)
-        user = self.model(email=email, **extra_fields)
-        user.set_password(password)
-        user.save(using=self._db)
-        return user
 
-    def create_superuser(self, email, password=None, **extra_fields):
-        extra_fields.setdefault('role', User.Role.ADMIN)
-        extra_fields.setdefault('is_staff', True)
-        extra_fields.setdefault('is_superuser', True)
-        return self.create_user(email, password, **extra_fields)
+class User(models.Model):
+    ROLE_CHOICES = [
+        ("admin", "Admin"),
+        ("patient", "Patient"),
+    ]
 
-class User(TimeStampedSoftDeleteModel, AbstractBaseUser, PermissionsMixin):
-    class Role(models.TextChoices):
-        ADMIN = 'admin', 'Admin'
-        PATIENT = 'patient', 'Patient'
-    
-
-    full_name = models.CharField(max_length=150)
+    id = ObjectIdAutoField(primary_key=True)
     email = models.EmailField(unique=True)
-    role = models.CharField(max_length=20, choices=Role.choices, default=Role.PATIENT)
-    is_active = models.BooleanField(default=True)
-    is_staff = models.BooleanField(default=False)
+    password = models.CharField(max_length=255)
+    full_name = models.CharField(max_length=100)
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default="patient")
 
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['full_name']
+    # Soft delete fields are kept directly on this model.
+    # No common base model is required.
+    is_deleted = models.BooleanField(default=False)
+    deleted_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
-    objects = UserManager()
+    class Meta:
+        ordering = ["-created_at"]
 
     def __str__(self):
         return self.email

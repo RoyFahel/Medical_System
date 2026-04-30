@@ -1,0 +1,47 @@
+<section class="container">
+  <div class="page-title">
+    <h2>Diseases</h2>
+    <a *ngIf="auth.isAdmin()" class="btn btn-primary" routerLink="/diseases/new">Add disease</a>
+  </div>
+
+  <div class="card toolbar">
+    <input [(ngModel)]="search" placeholder="Search by disease name" />
+    <select [(ngModel)]="ordering">
+      <option value="name">Name A-Z</option>
+      <option value="-name">Name Z-A</option>
+      <option value="created_at">Created date</option>
+    </select>
+    <button class="btn btn-secondary" (click)="load()">Apply</button>
+  </div>
+
+  <div class="error" *ngIf="error">{{ error }}</div>
+
+  <div class="grid grid-3">
+    <div class="card" *ngFor="let disease of diseases">
+      <img *ngIf="disease.image_url" class="preview" [src]="disease.image_url" [alt]="disease.name" />
+      <h3>{{ disease.name }}</h3>
+      <p class="small">{{ disease.description }}</p>
+      <p><strong>Symptoms:</strong> {{ disease.symptoms }}</p>
+      <p><strong>Prevention:</strong> {{ disease.prevention }}</p>
+
+      <div class="actions">
+        <a
+          *ngIf="auth.isAdmin()"
+          class="btn btn-secondary"
+          [routerLink]="['/diseases', getKey(disease), 'edit']"
+        >
+          Edit
+        </a>
+
+        <button
+          *ngIf="auth.isAdmin()"
+          type="button"
+          class="btn btn-danger"
+          (click)="remove(getKey(disease))"
+        >
+          Delete
+        </button>
+      </div>
+    </div>
+  </div>
+</section>

@@ -16,8 +16,6 @@ class Doctor(models.Model):
     full_name = models.CharField(max_length=150)
     email = models.EmailField(unique=True)
     phone = models.CharField(max_length=20)
-    specialty = models.CharField(max_length=100)
-    city = models.CharField(max_length=100)
     profile_image = models.ImageField(upload_to="doctors/images/", null=True, blank=True)
     license_pdf = models.FileField(upload_to="doctors/pdfs/", null=True, blank=True)
     diseases = models.ManyToManyField(Disease, related_name="doctors", blank=True)

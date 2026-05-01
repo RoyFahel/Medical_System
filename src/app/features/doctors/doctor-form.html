@@ -1,0 +1,67 @@
+<section class="container">
+  <div class="page-title">
+    <h2>{{ isEdit ? 'Edit doctor' : 'Add doctor' }}</h2>
+  </div>
+
+  <div class="card">
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <div class="grid grid-2">
+        <div class="form-group">
+          <label>Full name</label>
+          <input formControlName="full_name" />
+          <small class="error" *ngIf="form.controls.full_name.touched && form.controls.full_name.invalid">
+            Full name is required.
+          </small>
+        </div>
+
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" formControlName="email" />
+          <small class="error" *ngIf="form.controls.email.touched && form.controls.email.hasError('required')">
+            Email is required.
+          </small>
+          <small class="error" *ngIf="form.controls.email.touched && form.controls.email.hasError('email')">
+            Enter a valid email address.
+          </small>
+          <small class="error" *ngIf="form.controls.email.touched && form.controls.email.hasError('server')">
+            {{ form.controls.email.getError('server') }}
+          </small>
+        </div>
+
+        <div class="form-group">
+          <label>Phone</label>
+          <input formControlName="phone" />
+          <small class="error" *ngIf="form.controls.phone.touched && form.controls.phone.invalid">
+            Phone is required.
+          </small>
+        </div>
+
+        <div class="form-group">
+          <label>Diseases treated</label>
+          <select formControlName="diseases" multiple>
+            <option *ngFor="let disease of diseases" [value]="disease.id">
+              {{ disease.name }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Profile image</label>
+          <input type="file" (change)="onImageSelected($event)" accept="image/*" />
+        </div>
+
+        <div class="form-group">
+          <label>License PDF</label>
+          <input type="file" (change)="onPdfSelected($event)" accept="application/pdf" />
+        </div>
+      </div>
+
+      <div class="error" *ngIf="error">{{ error }}</div>
+
+      <div class="actions">
+        <button class="btn btn-primary" [disabled]="form.invalid">Save</button>
+        <button type="button" class="btn btn-secondary" (click)="cancel()">Cancel</button>
+      </div>
+    </form>
+  </div>
+</section>

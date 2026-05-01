@@ -10,13 +10,21 @@ class AppointmentListCreateView(generics.ListCreateAPIView):
     permission_classes = [permissions.AllowAny]
 
     def get_queryset(self):
-        return Appointment.objects.filter(is_deleted=False)
+        queryset = Appointment.objects.filter(is_deleted=False)
+
+        status_filter = self.request.query_params.get("status")
+        if status_filter:
+            queryset = queryset.filter(status=status_filter)
+
+        return queryset
 
 
 class AppointmentRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = AppointmentSerializer
     permission_classes = [permissions.AllowAny]
+
     lookup_field = "id"
+    lookup_url_kwarg = "id"
 
     def get_queryset(self):
         return Appointment.objects.filter(is_deleted=False)

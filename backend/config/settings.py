@@ -1,5 +1,5 @@
 from pathlib import Path
-
+from corsheaders.defaults import default_headers
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = "dev-secret-key"
@@ -58,6 +58,11 @@ REST_FRAMEWORK = {
         "rest_framework.permissions.AllowAny",
     ],
     "UNAUTHENTICATED_USER": None,
+    "DEFAULT_PARSER_CLASSES": [
+        "rest_framework.parsers.JSONParser",
+        "rest_framework.parsers.FormParser",
+        "rest_framework.parsers.MultiPartParser",
+    ],
     "DEFAULT_RENDERER_CLASSES": [
         "rest_framework.renderers.JSONRenderer",
     ],
@@ -74,3 +79,9 @@ MEDIA_ROOT = BASE_DIR / "media"
 
 DEFAULT_AUTO_FIELD = "django_mongodb_backend.fields.ObjectIdAutoField"
 CORS_ALLOW_ALL_ORIGINS = True
+
+
+CORS_ALLOW_HEADERS = list(default_headers) + [
+    "x-user-role",
+    "x-user-email",
+]

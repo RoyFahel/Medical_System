@@ -1,0 +1,47 @@
+<section class="container">
+  <div class="page-title">
+    <h2>Users</h2>
+  </div>
+
+  <div *ngIf="loading" class="card">
+    Loading users...
+  </div>
+
+  <div *ngIf="error" class="card error">
+    {{ error }}
+  </div>
+
+  <div class="card table-wrap" *ngIf="!loading && !error">
+    <table>
+      <thead>
+       <tr>
+  <th>Full Name</th>
+  <th>Email</th>
+  <th>Role</th>
+  <th>Created At</th>
+  <th>Actions</th>
+</tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let user of users">
+          <td>{{ user.full_name }}</td>
+          <td>{{ user.email }}</td>
+          <td>
+            <span class="badge" [ngClass]="user.role">
+              {{ user.role }}
+            </span>
+          </td>
+          <td>{{ user.created_at | date:'medium' }}</td>
+          <td>
+            <button (click)="deleteUser(user.id)" class="btn btn-danger">Delete</button>
+          </td>
+        </tr>
+
+        <tr *ngIf="users.length === 0">
+          <td colspan="4">No users found.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>

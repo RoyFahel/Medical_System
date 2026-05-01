@@ -15,7 +15,6 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        # Public registration is patient-only. Do not accept role from frontend.
         fields = ["id", "full_name", "email", "password"]
 
     def validate_email(self, value):
@@ -35,9 +34,12 @@ class LoginSerializer(serializers.Serializer):
     def validate(self, attrs):
         email = attrs.get("email", "").lower()
         password = attrs.get("password")
+
         user = User.objects.filter(email__iexact=email, is_deleted=False).first()
+
         if not user or user.password != password:
             raise serializers.ValidationError("Invalid email or password")
+
         attrs["user"] = user
         return attrs
 

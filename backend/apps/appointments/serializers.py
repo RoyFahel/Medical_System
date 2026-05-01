@@ -5,14 +5,21 @@ from apps.doctors.models import Doctor
 
 
 class AppointmentSerializer(serializers.ModelSerializer):
+    id = serializers.SerializerMethodField()
+
     patient = serializers.SerializerMethodField()
     doctor = serializers.SerializerMethodField()
 
-    patient_email = serializers.EmailField(write_only=True)
-    doctor_email = serializers.EmailField(write_only=True)
+    # Input only
+    patient_email = serializers.EmailField(write_only=True, required=True)
+    doctor_email = serializers.EmailField(write_only=True, required=True)
 
+    # Output for frontend table
     patient_name = serializers.SerializerMethodField()
     doctor_name = serializers.SerializerMethodField()
+    patient_email_display = serializers.SerializerMethodField()
+    doctor_email_display = serializers.SerializerMethodField()
+   
 
     class Meta:
         model = Appointment
@@ -24,6 +31,8 @@ class AppointmentSerializer(serializers.ModelSerializer):
             "doctor_email",
             "patient_name",
             "doctor_name",
+            "patient_email_display",
+            "doctor_email_display",
             "appointment_date",
             "appointment_time",
             "notes",
@@ -32,22 +41,15 @@ class AppointmentSerializer(serializers.ModelSerializer):
             "updated_at",
             "is_deleted",
         ]
-        read_only_fields = [
-            "id",
-            "patient",
-            "doctor",
-            "patient_name",
-            "doctor_name",
-            "created_at",
-            "updated_at",
-            "is_deleted",
-        ]
+
+    def get_id(self, obj):
+        return str(obj.id) if obj.id else ""
 
     def get_patient(self, obj):
-        return str(obj.patient_id) if obj.patient_id else None
+        return str(obj.patient.id) if obj.patient else ""
 
     def get_doctor(self, obj):
-        return str(obj.doctor_id) if obj.doctor_id else None
+        return str(obj.doctor.id) if obj.doctor else ""
 
     def get_patient_name(self, obj):
         return obj.patient.full_name if obj.patient else ""
@@ -55,17 +57,37 @@ class AppointmentSerializer(serializers.ModelSerializer):
     def get_doctor_name(self, obj):
         return obj.doctor.full_name if obj.doctor else ""
 
+    def get_patient_email_display(self, obj):
+        return obj.patient.email if obj.patient else ""
+
+    def get_doctor_email_display(self, obj):
+        return obj.doctor.email if obj.doctor else ""
+
+   
+
     def create(self, validated_data):
         patient_email = validated_data.pop("patient_email")
         doctor_email = validated_data.pop("doctor_email")
 
-        patient = User.objects.filter(email=patient_email, role="patient", is_deleted=False).first()
-        if not patient:
-            raise serializers.ValidationError({"patient_email": "Patient not found."})
+        patient = User.objects.filter(
+            email__iexact=patient_email.strip(),
+            is_deleted=False
+        ).first()
 
-        doctor = Doctor.objects.filter(email=doctor_email, is_deleted=False).first()
+        if not patient:
+            raise serializers.ValidationError({
+                "patient_email": "Patient not found."
+            })
+
+        doctor = Doctor.objects.filter(
+            email__iexact=doctor_email.strip(),
+            is_deleted=False
+        ).first()
+
         if not doctor:
-            raise serializers.ValidationError({"doctor_email": "Doctor not found."})
+            raise serializers.ValidationError({
+                "doctor_email": "Doctor not found."
+            })
 
         exists = Appointment.objects.filter(
             doctor=doctor,

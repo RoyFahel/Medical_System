@@ -13,9 +13,6 @@ class User(models.Model):
     password = models.CharField(max_length=255)
     full_name = models.CharField(max_length=100)
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default="patient")
-
-    # Soft delete fields are kept directly on this model.
-    # No common base model is required.
     is_deleted = models.BooleanField(default=False)
     deleted_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
